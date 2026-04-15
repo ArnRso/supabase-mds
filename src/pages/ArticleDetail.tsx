@@ -1,10 +1,20 @@
+import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { getArticle } from '../store/articles'
+import { getArticle, type Article } from '../store/articles'
 
 export default function ArticleDetail() {
   const { id } = useParams<{ id: string }>()
-  const article = getArticle(id!)
+  const [article, setArticle] = useState<Article | undefined>()
+  const [loading, setLoading] = useState(true)
 
+  useEffect(() => {
+    getArticle(id!).then(a => {
+      setArticle(a)
+      setLoading(false)
+    })
+  }, [id])
+
+  if (loading) return <p>Chargement…</p>
   if (!article) return <p>Article introuvable.</p>
 
   return (

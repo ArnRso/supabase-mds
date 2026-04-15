@@ -1,15 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getArticles, deleteArticle, type Article } from '../store/articles'
 import { useAuth } from '../context/AuthContext'
 
 export default function Articles() {
   const { user } = useAuth()
-  const [articles, setArticles] = useState<Article[]>(getArticles)
+  const [articles, setArticles] = useState<Article[]>([])
 
-  function handleDelete(id: string) {
-    deleteArticle(id)
-    setArticles(getArticles())
+  useEffect(() => {
+    getArticles().then(setArticles)
+  }, [])
+
+  async function handleDelete(id: string) {
+    await deleteArticle(id)
+    setArticles(await getArticles())
   }
 
   return (
@@ -26,7 +30,7 @@ export default function Articles() {
             <small> — par {article.author} le {new Date(article.createdAt).toLocaleDateString()}</small>
           </header>
           <p>{article.content.slice(0, 150)}{article.content.length > 150 ? '…' : ''}</p>
-          {user && (
+          {user?.id === article.userId && (
             <footer style={{ display: 'flex', gap: '0.5rem' }}>
               <Link to={`/articles/${article.id}/edit`} role="button" className="secondary">Modifier</Link>
               <button className="contrast" onClick={() => handleDelete(article.id)}>Supprimer</button>

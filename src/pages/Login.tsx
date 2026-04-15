@@ -5,23 +5,23 @@ import { useAuth } from '../context/AuthContext'
 export default function Login() {
   const { login, register } = useAuth()
   const navigate = useNavigate()
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
-  function handleLogin(e: FormEvent) {
+  async function handleLogin(e: FormEvent) {
     e.preventDefault()
     try {
-      login(username, password)
+      await login(email, password)
       navigate('/')
     } catch (err) {
       setError((err as Error).message)
     }
   }
 
-  function handleRegister() {
+  async function handleRegister() {
     try {
-      register(username, password)
+      await register(email, password)
       navigate('/')
     } catch (err) {
       setError((err as Error).message)
@@ -34,8 +34,8 @@ export default function Login() {
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleLogin}>
         <label>
-          Nom d'utilisateur
-          <input value={username} onChange={e => setUsername(e.target.value)} required />
+          Email
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
         </label>
         <label>
           Mot de passe

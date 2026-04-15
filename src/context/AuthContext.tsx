@@ -1,31 +1,34 @@
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { type User, getCurrentUser, login as storeLogin, logout as storeLogout, register as storeRegister } from '../store/auth'
 
 interface AuthContextType {
   user: User | null
-  login: (username: string, password: string) => void
-  logout: () => void
-  register: (username: string, password: string) => void
+  login: (email: string, password: string) => Promise<void>
+  logout: () => Promise<void>
+  register: (email: string, password: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(getCurrentUser)
+  const [user, setUser] = useState<User | null>(null)
 
-  function login(username: string, password: string) {
-    const u = storeLogin(username, password)
+  useEffect(() => {
+    getCurrentUser().then(setUser)
+  }, [])
+
+  async function login(email: string, password: string) {
+    const u = await storeLogin(email, password)
     setUser(u)
   }
 
-  function logout() {
-    storeLogout()
+  async function logout() {
+    await storeLogout()
     setUser(null)
   }
 
-  function register(username: string, password: string) {
-    const u = storeRegister(username, password)
-    storeLogin(username, password)
+  async function register(email: string, password: string) {
+    const u = await storeRegister(email, password)
     setUser(u)
   }
 

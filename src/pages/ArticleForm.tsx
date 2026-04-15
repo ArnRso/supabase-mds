@@ -1,25 +1,35 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getArticle, createArticle, updateArticle } from '../store/articles'
+import { getArticle, createArticle, updateArticle, type Article } from '../store/articles'
 import { useAuth } from '../context/AuthContext'
 
 export default function ArticleForm() {
   const { id } = useParams<{ id: string }>()
   const isEdit = Boolean(id)
-  const existing = id ? getArticle(id) : undefined
   const { user } = useAuth()
   const navigate = useNavigate()
 
-  const [title, setTitle] = useState(existing?.title ?? '')
-  const [content, setContent] = useState(existing?.content ?? '')
+  const [title, setTitle] = useState('')
+  const [content, setContent] = useState('')
 
-  function handleSubmit(e: FormEvent) {
+  useEffect(() => {
+    if (id) {
+      getArticle(id).then((article: Article | undefined) => {
+        if (article) {
+          setTitle(article.title)
+          setContent(article.content)
+        }
+      })
+    }
+  }, [id])
+
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    const data = { title, content, author: user!.username }
+    const data = { title, content, author: user!.username  }
     if (isEdit && id) {
-      updateArticle(id, data)
+      await updateArticle(id, data)
     } else {
-      createArticle(data)
+      await createArticle(data)
     }
     navigate('/articles')
   }
