@@ -2,18 +2,19 @@ import { type FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-export default function Login() {
-  const { login } = useAuth()
+export default function Register() {
+  const { register } = useAuth()
   const navigate = useNavigate()
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
-  async function handleLogin(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError('')
     try {
-      await login(email, password)
+      await register(email, password, username)
       navigate('/')
     } catch (err) {
       setError((err as Error).message)
@@ -22,20 +23,24 @@ export default function Login() {
 
   return (
     <article style={{ maxWidth: 400, margin: '4rem auto' }}>
-      <h2>Connexion</h2>
+      <h2>Créer un compte</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Pseudo
+          <input type="text" value={username} onChange={e => setUsername(e.target.value)} required minLength={3} />
+        </label>
         <label>
           Email
           <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
         </label>
         <label>
           Mot de passe
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
         </label>
-        <button type="submit">Se connecter</button>
+        <button type="submit">S'inscrire</button>
       </form>
-      <p style={{ marginTop: '1rem' }}>Pas encore de compte ? <Link to="/register">S'inscrire</Link></p>
+      <p style={{ marginTop: '1rem' }}>Déjà un compte ? <Link to="/login">Se connecter</Link></p>
     </article>
   )
 }

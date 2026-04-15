@@ -1,4 +1,4 @@
-import { FormEvent, useState, useEffect } from 'react'
+import { type FormEvent, useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getArticle, createArticle, updateArticle, type Article } from '../store/articles'
 import { useAuth } from '../context/AuthContext'
@@ -23,20 +23,28 @@ export default function ArticleForm() {
     }
   }, [id])
 
+  const [error, setError] = useState('')
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    const data = { title, content, author: user!.username  }
-    if (isEdit && id) {
-      await updateArticle(id, data)
-    } else {
-      await createArticle(data)
+    setError('')
+    try {
+      const data = { title, content, author: user!.username }
+      if (isEdit && id) {
+        await updateArticle(id, data)
+      } else {
+        await createArticle(data)
+      }
+      navigate('/articles')
+    } catch (err) {
+      setError((err as Error).message)
     }
-    navigate('/articles')
   }
 
   return (
     <article style={{ maxWidth: 600, margin: '0 auto' }}>
       <h2>{isEdit ? 'Modifier l\'article' : 'Nouvel article'}</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <label>
           Titre

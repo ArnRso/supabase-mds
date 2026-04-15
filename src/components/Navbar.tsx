@@ -18,7 +18,10 @@ function Navbar() {
               <li><a href="#" onClick={e => { e.preventDefault(); logout() }}>Déconnexion</a></li>
             </>
           ) : (
-            <li><Link to="/login">Connexion</Link></li>
+            <>
+              <li><Link to="/login">Connexion</Link></li>
+              <li><Link to="/register">Inscription</Link></li>
+            </>
           )}
         </ul>
       </nav>

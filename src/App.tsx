@@ -7,6 +7,7 @@ import Articles from './pages/Articles'
 import ArticleDetail from './pages/ArticleDetail'
 import ArticleForm from './pages/ArticleForm'
 import Login from './pages/Login'
+import Register from './pages/Register'
 
 function App() {
   return (
@@ -16,14 +17,15 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/articles" element={<Articles />} />
-          <Route path="/articles/:id" element={<ArticleDetail />} />
-          <Route path="/login" element={<Login />} />
           <Route path="/articles/new" element={
             <ProtectedRoute><ArticleForm /></ProtectedRoute>
           } />
           <Route path="/articles/:id/edit" element={
             <ProtectedRoute><ArticleForm /></ProtectedRoute>
           } />
+          <Route path="/articles/:id" element={<ArticleDetail />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </main>
     </AuthProvider>
